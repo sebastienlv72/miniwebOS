@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Connexion Google</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    #profile {
+      display: none;
+      margin-top: 20px;
+      background: #222;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    #logout-btn {
+      margin-top: 10px;
+      padding: 8px 16px;
+      background: crimson;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>Web OS – Connexion avec Google</h1>
+
+  <div id="g_id_onload"
+       data-client_id="908397631579-20c8p66k2ag6rkqhkc8u5r4nqaihndou.apps.googleusercontent.com"
+       data-callback="handleCredentialResponse"
+       data-auto_prompt="false">
+  </div>
+
+  <div class="g_id_signin"
+       data-type="standard"
+       data-size="large"
+       data-theme="outline"
+       data-text="signin_with"
+       data-shape="rectangular"
+       data-logo_alignment="left">
+  </div>
+
+  <div id="profile">
+    <p><strong>Connecté en tant que :</strong></p>
+    <p id="user-name"></p>
+    <p id="user-email"></p>
+    <button id="logout-btn" onclick="logout()">Se déconnecter</button>
+  </div>
+
+  <script>
+    function handleCredentialResponse(response) {
+      // Décoder le JWT pour obtenir les infos utilisateur
+      const data = parseJwt(response.credential);
+      document.getElementById('user-name').textContent = data.name;
+      document.getElementById('user-email').textContent = data.email;
+      document.getElementById('profile').style.display = 'block';
+
+      // Masquer le bouton Google
+      document.querySelector('.g_id_signin').style.display = 'none';
+    }
+
+    function logout() {
+      google.accounts.id.disableAutoSelect();
+      document.getElementById('profile').style.display = 'none';
+      document.querySelector('.g_id_signin').style.display = 'block';
+    }
+
+    function parseJwt(token) {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+        '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+      ).join(''));
+      return JSON.parse(jsonPayload);
+    }
+  </script>
+</body>
+</html>
