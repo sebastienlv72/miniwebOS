@@ -2,78 +2,180 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Connexion Google</title>
+  <title>Web OS – Connexion Google</title>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
-    body {
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%;
+      height: 100%;
       font-family: Arial, sans-serif;
-      background: #111;
+      background: url('https://wallpaperaccess.com/full/317501.jpg') no-repeat center center fixed;
+      background-size: cover;
+      overflow: hidden;
+    }
+
+    #login-container {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
       color: white;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      z-index: 100;
     }
-    #profile {
-      display: none;
-      margin-top: 20px;
-      background: #222;
-      padding: 20px;
-      border-radius: 10px;
-    }
-    #logout-btn {
-      margin-top: 10px;
-      padding: 8px 16px;
-      background: crimson;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
+
+    #clock {
+      position: absolute;
+      top: 10px;
+      left: 20px;
       color: white;
+      font-size: 1.2em;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 5px 10px;
+      border-radius: 8px;
+    }
+
+    #dock {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 20px;
+      background: rgba(255,255,255,0.1);
+      padding: 10px 20px;
+      border-radius: 20px;
+      backdrop-filter: blur(5px);
+    }
+
+    .dock-icon {
+      width: 50px;
+      height: 50px;
+      background-color: rgba(255,255,255,0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .dock-icon:hover {
+      transform: scale(1.2);
+    }
+
+    .window {
+      position: absolute;
+      top: 100px;
+      left: 100px;
+      width: 400px;
+      height: 300px;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .window-header {
+      padding: 10px;
+      background: #3f51b5;
+      color: white;
+      cursor: move;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .window-content {
+      padding: 10px;
+      flex-grow: 1;
+      overflow-y: auto;
+    }
+
+    .close-btn {
+      cursor: pointer;
+    }
+
+    #file-list li {
+      margin-bottom: 5px;
+    }
+
+    #logout-btn {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      padding: 5px 10px;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #profile-info {
+      position: absolute;
+      top: 50px;
+      right: 20px;
+      background: rgba(255,255,255,0.1);
+      color: white;
+      padding: 10px;
+      border-radius: 8px;
     }
   </style>
 </head>
 <body>
-  <h1>Web OS – Connexion avec Google</h1>
-
-  <div id="g_id_onload"
-       data-client_id="908397631579-20c8p66k2ag6rkqhkc8u5r4nqaihndou.apps.googleusercontent.com"
-       data-callback="handleCredentialResponse"
-       data-auto_prompt="false">
+  <div id="login-container">
+    <h1>Se connecter avec Google</h1>
+    <div id="g_id_onload"
+         data-client_id="908397631579-20c8p66k2ag6rkqhkc8u5r4nqaihndou.apps.googleusercontent.com"
+         data-callback="handleCredentialResponse"
+         data-auto_prompt="false">
+    </div>
+    <div class="g_id_signin"
+         data-type="standard"
+         data-size="large"
+         data-theme="outline"
+         data-text="signin_with"
+         data-shape="rectangular"
+         data-logo_alignment="left">
+    </div>
   </div>
 
-  <div class="g_id_signin"
-       data-type="standard"
-       data-size="large"
-       data-theme="outline"
-       data-text="signin_with"
-       data-shape="rectangular"
-       data-logo_alignment="left">
+  <div id="clock"></div>
+  <div id="dock" style="display:none;">
+    <div class="dock-icon" onclick="openFileManager()">📁</div>
   </div>
-
-  <div id="profile">
-    <p><strong>Connecté en tant que :</strong></p>
-    <p id="user-name"></p>
-    <p id="user-email"></p>
-    <button id="logout-btn" onclick="logout()">Se déconnecter</button>
+  <button id="logout-btn" onclick="logout()" style="display:none;">Déconnexion</button>
+  <div id="profile-info" style="display:none;">
+    <div id="user-name"></div>
+    <div id="user-email"></div>
   </div>
 
   <script>
     function handleCredentialResponse(response) {
-      // Décoder le JWT pour obtenir les infos utilisateur
       const data = parseJwt(response.credential);
-      document.getElementById('user-name').textContent = data.name;
-      document.getElementById('user-email').textContent = data.email;
-      document.getElementById('profile').style.display = 'block';
+      document.getElementById('user-name').textContent = "👤 " + data.name;
+      document.getElementById('user-email').textContent = "📧 " + data.email;
 
-      // Masquer le bouton Google
-      document.querySelector('.g_id_signin').style.display = 'none';
+      document.getElementById('login-container').style.display = 'none';
+      document.getElementById('dock').style.display = 'flex';
+      document.getElementById('logout-btn').style.display = 'block';
+      document.getElementById('profile-info').style.display = 'block';
     }
 
     function logout() {
       google.accounts.id.disableAutoSelect();
-      document.getElementById('profile').style.display = 'none';
-      document.querySelector('.g_id_signin').style.display = 'block';
+      location.reload();
     }
 
     function parseJwt(token) {
@@ -83,6 +185,84 @@
         '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
       ).join(''));
       return JSON.parse(jsonPayload);
+    }
+
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('clock').textContent = now.toLocaleTimeString();
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    function openFileManager() {
+      const win = document.createElement('div');
+      win.className = 'window';
+      win.innerHTML = `
+        <div class="window-header">
+          <span>Fichiers</span>
+          <span class="close-btn" onclick="this.closest('.window').remove()">✖</span>
+        </div>
+        <div class="window-content">
+          <input type="text" id="new-file" placeholder="Nom du fichier">
+          <button onclick="addFile(this)">Créer</button>
+          <ul id="file-list"></ul>
+        </div>
+      `;
+      document.body.appendChild(win);
+      loadFiles(win.querySelector('#file-list'));
+      makeDraggable(win);
+    }
+
+    function addFile(btn) {
+      const container = btn.closest('.window');
+      const input = container.querySelector('#new-file');
+      const list = container.querySelector('#file-list');
+      const filename = input.value.trim();
+      if (!filename) return;
+      let files = JSON.parse(localStorage.getItem('webos_files') || '[]');
+      files.push(filename);
+      localStorage.setItem('webos_files', JSON.stringify(files));
+      input.value = '';
+      loadFiles(list);
+    }
+
+    function loadFiles(listEl) {
+      const files = JSON.parse(localStorage.getItem('webos_files') || '[]');
+      listEl.innerHTML = '';
+      files.forEach((f, i) => {
+        const li = document.createElement('li');
+        li.textContent = f + ' ';
+        const del = document.createElement('button');
+        del.textContent = '🗑️';
+        del.onclick = () => {
+          files.splice(i, 1);
+          localStorage.setItem('webos_files', JSON.stringify(files));
+          loadFiles(listEl);
+        };
+        li.appendChild(del);
+        listEl.appendChild(li);
+      });
+    }
+
+    function makeDraggable(el) {
+      const header = el.querySelector('.window-header');
+      let isDragging = false;
+      let offsetX = 0, offsetY = 0;
+
+      header.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        offsetX = e.clientX - el.offsetLeft;
+        offsetY = e.clientY - el.offsetTop;
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+          el.style.left = `${e.clientX - offsetX}px`;
+          el.style.top = `${e.clientY - offsetY}px`;
+        }
+      });
+
+      document.addEventListener('mouseup', () => isDragging = false);
     }
   </script>
 </body>
