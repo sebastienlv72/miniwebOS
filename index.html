@@ -2,164 +2,112 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Web OS avec Google</title>
+  <title>Connexion Google</title>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     body {
-      margin: 0;
-      font-family: sans-serif;
-      background-color: #111;
+      font-family: Arial, sans-serif;
+      background: #111;
       color: white;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    header {
-      background-color: #222;
-      padding: 10px;
-      position: fixed;
-      width: 100%;
-      top: 0;
-      left: 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      z-index: 1000;
-    }
-    #clock {
-      font-size: 18px;
-    }
-    #profile {
-      display: none;
-    }
-    #logout-btn {
-      padding: 6px 12px;
-      background: crimson;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      color: white;
-    }
-    main {
-      flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      height: 100vh;
+      margin: 0;
     }
-    #dock {
-      position: fixed;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(255, 255, 255, 0.1);
-      padding: 10px;
-      border-radius: 20px;
-      display: flex;
-      gap: 10px;
-      backdrop-filter: blur(10px);
-      z-index: 1000;
-    }
-    .dock-icon {
-      width: 40px;
-      height: 40px;
-      cursor: pointer;
-    }
-    #file-manager {
-      background: #333;
+    #profile {
+      display: none;
+      margin-top: 20px;
+      background: #222;
       padding: 20px;
       border-radius: 10px;
-      margin-top: 20px;
-      display: none;
     }
-    #file-manager ul {
-      list-style: none;
-      padding: 0;
-    }
-    #file-manager li {
-      margin: 5px 0;
-    }
-    .window {
-      position: absolute;
-      background: #222;
-      border: 1px solid #444;
-      border-radius: 6px;
-      width: 600px;
-      height: 400px;
-      top: 100px;
-      left: 100px;
-      z-index: 999;
-      display: flex;
-      flex-direction: column;
-    }
-    .window-header {
-      background: #333;
-      padding: 5px 10px;
-      cursor: move;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .window iframe {
-      flex: 1;
-      border: none;
-      width: 100%;
-    }
-    .close-btn {
+    #logout-btn {
+      margin-top: 10px;
+      padding: 8px 16px;
       background: crimson;
       border: none;
-      color: white;
+      border-radius: 6px;
       cursor: pointer;
-      border-radius: 4px;
-      padding: 0 8px;
+      color: white;
+    }
+    .dock {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: #1a1a1a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      padding: 10px;
+      border-top: 1px solid #333;
+    }
+    .dock a {
+      width: 40px;
+      height: 40px;
+    }
+    .dock img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transition: transform 0.2s;
+    }
+    .dock img:hover {
+      transform: scale(1.2);
     }
   </style>
 </head>
 <body>
-  <header>
-    <div id="clock"></div>
-    <div id="profile">
-      Connecté : <span id="user-name"></span>
-      (<span id="user-email"></span>)
-      <button id="logout-btn" onclick="logout()">Déconnexion</button>
-    </div>
-  </header>
+  <h1>Web OS – Connexion avec Google</h1>
 
-  <main>
-    <h1>Web OS – Connexion avec Google</h1>
+  <div id="g_id_onload"
+       data-client_id="908397631579-20c8p66k2ag6rkqhkc8u5r4nqaihndou.apps.googleusercontent.com"
+       data-callback="handleCredentialResponse"
+       data-auto_prompt="false">
+  </div>
 
-    <div id="g_id_onload"
-         data-client_id="908397631579-20c8p66k2ag6rkqhkc8u5r4nqaihndou.apps.googleusercontent.com"
-         data-callback="handleCredentialResponse"
-         data-auto_prompt="false">
-    </div>
+  <div class="g_id_signin"
+       data-type="standard"
+       data-size="large"
+       data-theme="outline"
+       data-text="signin_with"
+       data-shape="rectangular"
+       data-logo_alignment="left">
+  </div>
 
-    <div class="g_id_signin"
-         data-type="standard"
-         data-size="large"
-         data-theme="outline"
-         data-text="signin_with"
-         data-shape="rectangular"
-         data-logo_alignment="left">
-    </div>
+  <div id="profile">
+    <p><strong>Connecté en tant que :</strong></p>
+    <p id="user-name"></p>
+    <p id="user-email"></p>
+    <button id="logout-btn" onclick="logout()">Se déconnecter</button>
+  </div>
 
-    <div id="file-manager">
-      <h2>Gestionnaire de fichiers</h2>
-      <input type="text" id="new-filename" placeholder="Nom du fichier">
-      <button onclick="createFile()">Créer</button>
-      <ul id="file-list"></ul>
-    </div>
-  </main>
-
-  <div id="dock">
-    <img src="https://cdn-icons-png.flaticon.com/512/716/716784.png" class="dock-icon" title="Fichiers" onclick="toggleFileManager()">
-    <img src="https://cdn-icons-png.flaticon.com/512/300/300221.png" class="dock-icon" title="Gmail" onclick="openApp('https://mail.google.com')">
-    <img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png" class="dock-icon" title="YouTube" onclick="openApp('https://youtube.com')">
-    <img src="https://cdn-icons-png.flaticon.com/512/2702/2702602.png" class="dock-icon" title="Google Drive" onclick="openApp('https://drive.google.com')">
-    <img src="https://cdn-icons-png.flaticon.com/512/5968/5968517.png" class="dock-icon" title="Google Docs" onclick="openApp('https://docs.google.com')">
-    <img src="https://cdn-icons-png.flaticon.com/512/3314/3314265.png" class="dock-icon" title="Google Sheets" onclick="openApp('https://sheets.google.com')">
-    <img src="https://cdn-icons-png.flaticon.com/512/2702/2702603.png" class="dock-icon" title="Google Agenda" onclick="openApp('https://calendar.google.com')">
-    <img src="https://cdn-icons-png.flaticon.com/512/2811/2811806.png" class="dock-icon" title="Recherche" onclick="openGoogleSearch()">
+  <div class="dock">
+    <a href="https://mail.google.com" target="_blank" title="Gmail">
+      <img src="https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico" alt="Gmail">
+    </a>
+    <a href="https://drive.google.com" target="_blank" title="Drive">
+      <img src="https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_48dp.png" alt="Drive">
+    </a>
+    <a href="https://docs.google.com/document" target="_blank" title="Docs">
+      <img src="https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico" alt="Docs">
+    </a>
+    <a href="https://docs.google.com/spreadsheets" target="_blank" title="Sheets">
+      <img src="https://ssl.gstatic.com/docs/spreadsheets/favicon3.ico" alt="Sheets">
+    </a>
+    <a href="https://calendar.google.com" target="_blank" title="Agenda">
+      <img src="https://ssl.gstatic.com/calendar/images/dynamiclogo_2020q4/calendar_48dp.png" alt="Agenda">
+    </a>
+    <a href="https://www.youtube.com" target="_blank" title="YouTube">
+      <img src="https://www.youtube.com/s/desktop/fbffb14c/img/favicon_48.png" alt="YouTube">
+    </a>
+    <a href="https://www.google.com" target="_blank" title="Google Search">
+      <img src="https://www.google.com/favicon.ico" alt="Google">
+    </a>
   </div>
 
   <script>
@@ -184,86 +132,6 @@
         '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
       ).join(''));
       return JSON.parse(jsonPayload);
-    }
-
-    function updateClock() {
-      const now = new Date();
-      document.getElementById('clock').textContent = now.toLocaleTimeString();
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
-
-    function toggleFileManager() {
-      const fm = document.getElementById('file-manager');
-      fm.style.display = fm.style.display === 'none' ? 'block' : 'none';
-      loadFiles();
-    }
-
-    function createFile() {
-      const name = document.getElementById('new-filename').value;
-      if (!name) return;
-      localStorage.setItem(name, '');
-      loadFiles();
-    }
-
-    function loadFiles() {
-      const list = document.getElementById('file-list');
-      list.innerHTML = '';
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        const li = document.createElement('li');
-        li.textContent = key;
-        list.appendChild(li);
-      }
-    }
-
-    function openGoogleSearch() {
-      const query = prompt("Que voulez-vous rechercher sur Google ?");
-      if (query) {
-        window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
-      }
-    }
-
-    function openApp(url) {
-      const win = document.createElement('div');
-      win.className = 'window';
-      win.innerHTML = `
-        <div class="window-header">
-          <span>${url}</span>
-          <button class="close-btn" onclick="this.parentElement.parentElement.remove()">X</button>
-        </div>
-        <iframe src="${url}"></iframe>
-      `;
-      document.body.appendChild(win);
-      dragElement(win);
-    }
-
-    function dragElement(elmnt) {
-      const header = elmnt.querySelector(".window-header");
-      let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-      header.onmousedown = dragMouseDown;
-      function dragMouseDown(e) {
-        e = e || window.event;
-        e.preventDefault();
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        document.onmouseup = closeDragElement;
-        document.onmousemove = elementDrag;
-      }
-      function elementDrag(e) {
-        e = e || window.event;
-        e.preventDefault();
-        pos1 = pos3 - e.clientX;
-        pos2 = pos4 - e.clientY;
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-        elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-      }
-      function closeDragElement() {
-        document.onmouseup = null;
-        document.onmousemove = null;
-      }
     }
   </script>
 </body>
