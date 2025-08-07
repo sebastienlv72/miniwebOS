@@ -131,6 +131,24 @@
       padding: 10px;
       border-radius: 8px;
     }
+
+    #search-bar {
+      position: absolute;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+      z-index: 50;
+    }
+
+    #search-input {
+      width: 300px;
+      padding: 8px 12px;
+      border-radius: 20px;
+      border: none;
+      outline: none;
+      font-size: 16px;
+    }
   </style>
 </head>
 <body>
@@ -152,13 +170,22 @@
   </div>
 
   <div id="clock"></div>
+
+  <div id="search-bar">
+    <form action="https://www.google.com/search" method="GET" target="_blank">
+      <input id="search-input" name="q" type="text" placeholder="Rechercher sur Google...">
+    </form>
+  </div>
+
   <div id="dock" style="display:none;">
     <div class="dock-icon" onclick="openFileManager()">📁</div>
     <div class="dock-icon" onclick="openGmailApp()">📨</div>
     <div class="dock-icon" onclick="openYouTubeApp()">📺</div>
     <div class="dock-icon" onclick="openDriveApp()">💾</div>
     <div class="dock-icon" onclick="openDocsApp()">📄</div>
+    <div class="dock-icon" onclick="toggleSearchBar()">🔍</div>
   </div>
+
   <button id="logout-btn" onclick="logout()" style="display:none;">Déconnexion</button>
   <div id="profile-info" style="display:none;">
     <div id="user-name"></div>
@@ -231,6 +258,11 @@
 
     function openDocsApp() {
       window.open('https://docs.google.com/document/', '_blank');
+    }
+
+    function toggleSearchBar() {
+      const search = document.getElementById('search-bar');
+      search.style.display = search.style.display === 'none' ? 'block' : 'none';
     }
 
     function addFile(btn) {
