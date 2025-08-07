@@ -156,6 +156,8 @@
     <div class="dock-icon" onclick="openFileManager()">📁</div>
     <div class="dock-icon" onclick="openGmailApp()">📨</div>
     <div class="dock-icon" onclick="openYouTubeApp()">📺</div>
+    <div class="dock-icon" onclick="openDriveApp()">💾</div>
+    <div class="dock-icon" onclick="openDocsApp()">📄</div>
   </div>
   <button id="logout-btn" onclick="logout()" style="display:none;">Déconnexion</button>
   <div id="profile-info" style="display:none;">
@@ -221,6 +223,14 @@
 
     function openYouTubeApp() {
       window.open('https://www.youtube.com/', '_blank');
+    }
+
+    function openDriveApp() {
+      window.open('https://drive.google.com/', '_blank');
+    }
+
+    function openDocsApp() {
+      window.open('https://docs.google.com/document/', '_blank');
     }
 
     function addFile(btn) {
