@@ -2,163 +2,138 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Web OS – Connexion Google</title>
+  <title>Web OS avec Google</title>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body {
-      width: 100%;
-      height: 100%;
-      font-family: Arial, sans-serif;
-      background: url('https://wallpaperaccess.com/full/317501.jpg') no-repeat center center fixed;
-      background-size: cover;
-      overflow: hidden;
-    }
-
-    #login-container {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background-color: rgba(0, 0, 0, 0.7);
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background-color: #111;
       color: white;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background-color: #222;
+      padding: 10px;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      left: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 1000;
+    }
+    #clock {
+      font-size: 18px;
+    }
+    #profile {
+      display: none;
+    }
+    #logout-btn {
+      padding: 6px 12px;
+      background: crimson;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      color: white;
+    }
+    main {
+      flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      z-index: 100;
     }
-
-    #clock {
-      position: absolute;
-      top: 10px;
-      left: 20px;
-      color: white;
-      font-size: 1.2em;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 5px 10px;
-      border-radius: 8px;
-    }
-
     #dock {
-      position: absolute;
-      bottom: 20px;
+      position: fixed;
+      bottom: 10px;
       left: 50%;
       transform: translateX(-50%);
-      display: flex;
-      gap: 20px;
-      background: rgba(255,255,255,0.1);
-      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px;
       border-radius: 20px;
-      backdrop-filter: blur(5px);
-    }
-
-    .dock-icon {
-      width: 50px;
-      height: 50px;
-      background-color: rgba(255,255,255,0.2);
-      border-radius: 10px;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 24px;
+      gap: 10px;
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+    }
+    .dock-icon {
+      width: 40px;
+      height: 40px;
       cursor: pointer;
-      transition: transform 0.2s;
     }
-
-    .dock-icon:hover {
-      transform: scale(1.2);
+    #file-manager {
+      background: #333;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+      display: none;
     }
-
+    #file-manager ul {
+      list-style: none;
+      padding: 0;
+    }
+    #file-manager li {
+      margin: 5px 0;
+    }
     .window {
       position: absolute;
+      background: #222;
+      border: 1px solid #444;
+      border-radius: 6px;
+      width: 600px;
+      height: 400px;
       top: 100px;
       left: 100px;
-      width: 400px;
-      height: 300px;
-      background: white;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      z-index: 999;
       display: flex;
       flex-direction: column;
-      z-index: 10;
     }
-
     .window-header {
-      padding: 10px;
-      background: #3f51b5;
-      color: white;
+      background: #333;
+      padding: 5px 10px;
       cursor: move;
-      border-top-left-radius: 8px;
-      border-top-right-radius: 8px;
       display: flex;
       justify-content: space-between;
+      align-items: center;
     }
-
-    .window-content {
-      padding: 10px;
-      flex-grow: 1;
-      overflow-y: auto;
+    .window iframe {
+      flex: 1;
+      border: none;
+      width: 100%;
     }
-
     .close-btn {
-      cursor: pointer;
-    }
-
-    #file-list li {
-      margin-bottom: 5px;
-    }
-
-    #logout-btn {
-      position: absolute;
-      top: 10px;
-      right: 20px;
-      padding: 5px 10px;
-      background: rgba(255,255,255,0.2);
-      color: white;
+      background: crimson;
       border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    #profile-info {
-      position: absolute;
-      top: 50px;
-      right: 20px;
-      background: rgba(255,255,255,0.1);
       color: white;
-      padding: 10px;
-      border-radius: 8px;
-    }
-
-    #search-bar {
-      position: absolute;
-      top: 60px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: none;
-      z-index: 50;
-    }
-
-    #search-input {
-      width: 300px;
-      padding: 8px 12px;
-      border-radius: 20px;
-      border: none;
-      outline: none;
-      font-size: 16px;
+      cursor: pointer;
+      border-radius: 4px;
+      padding: 0 8px;
     }
   </style>
 </head>
 <body>
-  <div id="login-container">
-    <h1>Se connecter avec Google</h1>
+  <header>
+    <div id="clock"></div>
+    <div id="profile">
+      Connecté : <span id="user-name"></span>
+      (<span id="user-email"></span>)
+      <button id="logout-btn" onclick="logout()">Déconnexion</button>
+    </div>
+  </header>
+
+  <main>
+    <h1>Web OS – Connexion avec Google</h1>
+
     <div id="g_id_onload"
          data-client_id="908397631579-20c8p66k2ag6rkqhkc8u5r4nqaihndou.apps.googleusercontent.com"
          data-callback="handleCredentialResponse"
          data-auto_prompt="false">
     </div>
+
     <div class="g_id_signin"
          data-type="standard"
          data-size="large"
@@ -167,46 +142,39 @@
          data-shape="rectangular"
          data-logo_alignment="left">
     </div>
-  </div>
 
-  <div id="clock"></div>
+    <div id="file-manager">
+      <h2>Gestionnaire de fichiers</h2>
+      <input type="text" id="new-filename" placeholder="Nom du fichier">
+      <button onclick="createFile()">Créer</button>
+      <ul id="file-list"></ul>
+    </div>
+  </main>
 
-  <div id="search-bar">
-    <form action="https://www.google.com/search" method="GET" target="_blank">
-      <input id="search-input" name="q" type="text" placeholder="Rechercher sur Google...">
-    </form>
-  </div>
-
-  <div id="dock" style="display:none;">
-    <div class="dock-icon" onclick="openFileManager()">📁</div>
-    <div class="dock-icon" onclick="openGmailApp()">📨</div>
-    <div class="dock-icon" onclick="openYouTubeApp()">📺</div>
-    <div class="dock-icon" onclick="openDriveApp()">💾</div>
-    <div class="dock-icon" onclick="openDocsApp()">📄</div>
-    <div class="dock-icon" onclick="toggleSearchBar()">🔍</div>
-  </div>
-
-  <button id="logout-btn" onclick="logout()" style="display:none;">Déconnexion</button>
-  <div id="profile-info" style="display:none;">
-    <div id="user-name"></div>
-    <div id="user-email"></div>
+  <div id="dock">
+    <img src="https://cdn-icons-png.flaticon.com/512/716/716784.png" class="dock-icon" title="Fichiers" onclick="toggleFileManager()">
+    <img src="https://cdn-icons-png.flaticon.com/512/300/300221.png" class="dock-icon" title="Gmail" onclick="openApp('https://mail.google.com')">
+    <img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png" class="dock-icon" title="YouTube" onclick="openApp('https://youtube.com')">
+    <img src="https://cdn-icons-png.flaticon.com/512/2702/2702602.png" class="dock-icon" title="Google Drive" onclick="openApp('https://drive.google.com')">
+    <img src="https://cdn-icons-png.flaticon.com/512/5968/5968517.png" class="dock-icon" title="Google Docs" onclick="openApp('https://docs.google.com')">
+    <img src="https://cdn-icons-png.flaticon.com/512/3314/3314265.png" class="dock-icon" title="Google Sheets" onclick="openApp('https://sheets.google.com')">
+    <img src="https://cdn-icons-png.flaticon.com/512/2702/2702603.png" class="dock-icon" title="Google Agenda" onclick="openApp('https://calendar.google.com')">
+    <img src="https://cdn-icons-png.flaticon.com/512/2811/2811806.png" class="dock-icon" title="Recherche" onclick="openGoogleSearch()">
   </div>
 
   <script>
     function handleCredentialResponse(response) {
       const data = parseJwt(response.credential);
-      document.getElementById('user-name').textContent = "👤 " + data.name;
-      document.getElementById('user-email').textContent = "📧 " + data.email;
-
-      document.getElementById('login-container').style.display = 'none';
-      document.getElementById('dock').style.display = 'flex';
-      document.getElementById('logout-btn').style.display = 'block';
-      document.getElementById('profile-info').style.display = 'block';
+      document.getElementById('user-name').textContent = data.name;
+      document.getElementById('user-email').textContent = data.email;
+      document.getElementById('profile').style.display = 'block';
+      document.querySelector('.g_id_signin').style.display = 'none';
     }
 
     function logout() {
       google.accounts.id.disableAutoSelect();
-      location.reload();
+      document.getElementById('profile').style.display = 'none';
+      document.querySelector('.g_id_signin').style.display = 'block';
     }
 
     function parseJwt(token) {
@@ -225,96 +193,77 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    function openFileManager() {
+    function toggleFileManager() {
+      const fm = document.getElementById('file-manager');
+      fm.style.display = fm.style.display === 'none' ? 'block' : 'none';
+      loadFiles();
+    }
+
+    function createFile() {
+      const name = document.getElementById('new-filename').value;
+      if (!name) return;
+      localStorage.setItem(name, '');
+      loadFiles();
+    }
+
+    function loadFiles() {
+      const list = document.getElementById('file-list');
+      list.innerHTML = '';
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        const li = document.createElement('li');
+        li.textContent = key;
+        list.appendChild(li);
+      }
+    }
+
+    function openGoogleSearch() {
+      const query = prompt("Que voulez-vous rechercher sur Google ?");
+      if (query) {
+        window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
+      }
+    }
+
+    function openApp(url) {
       const win = document.createElement('div');
       win.className = 'window';
       win.innerHTML = `
         <div class="window-header">
-          <span>Fichiers</span>
-          <span class="close-btn" onclick="this.closest('.window').remove()">✖</span>
+          <span>${url}</span>
+          <button class="close-btn" onclick="this.parentElement.parentElement.remove()">X</button>
         </div>
-        <div class="window-content">
-          <input type="text" id="new-file" placeholder="Nom du fichier">
-          <button onclick="addFile(this)">Créer</button>
-          <ul id="file-list"></ul>
-        </div>
+        <iframe src="${url}"></iframe>
       `;
       document.body.appendChild(win);
-      loadFiles(win.querySelector('#file-list'));
-      makeDraggable(win);
+      dragElement(win);
     }
 
-    function openGmailApp() {
-      window.open('https://mail.google.com/', '_blank');
-    }
-
-    function openYouTubeApp() {
-      window.open('https://www.youtube.com/', '_blank');
-    }
-
-    function openDriveApp() {
-      window.open('https://drive.google.com/', '_blank');
-    }
-
-    function openDocsApp() {
-      window.open('https://docs.google.com/document/', '_blank');
-    }
-
-    function toggleSearchBar() {
-      const search = document.getElementById('search-bar');
-      search.style.display = search.style.display === 'none' ? 'block' : 'none';
-    }
-
-    function addFile(btn) {
-      const container = btn.closest('.window');
-      const input = container.querySelector('#new-file');
-      const list = container.querySelector('#file-list');
-      const filename = input.value.trim();
-      if (!filename) return;
-      let files = JSON.parse(localStorage.getItem('webos_files') || '[]');
-      files.push(filename);
-      localStorage.setItem('webos_files', JSON.stringify(files));
-      input.value = '';
-      loadFiles(list);
-    }
-
-    function loadFiles(listEl) {
-      const files = JSON.parse(localStorage.getItem('webos_files') || '[]');
-      listEl.innerHTML = '';
-      files.forEach((f, i) => {
-        const li = document.createElement('li');
-        li.textContent = f + ' ';
-        const del = document.createElement('button');
-        del.textContent = '🗑️';
-        del.onclick = () => {
-          files.splice(i, 1);
-          localStorage.setItem('webos_files', JSON.stringify(files));
-          loadFiles(listEl);
-        };
-        li.appendChild(del);
-        listEl.appendChild(li);
-      });
-    }
-
-    function makeDraggable(el) {
-      const header = el.querySelector('.window-header');
-      let isDragging = false;
-      let offsetX = 0, offsetY = 0;
-
-      header.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        offsetX = e.clientX - el.offsetLeft;
-        offsetY = e.clientY - el.offsetTop;
-      });
-
-      document.addEventListener('mousemove', (e) => {
-        if (isDragging) {
-          el.style.left = `${e.clientX - offsetX}px`;
-          el.style.top = `${e.clientY - offsetY}px`;
-        }
-      });
-
-      document.addEventListener('mouseup', () => isDragging = false);
+    function dragElement(elmnt) {
+      const header = elmnt.querySelector(".window-header");
+      let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+      header.onmousedown = dragMouseDown;
+      function dragMouseDown(e) {
+        e = e || window.event;
+        e.preventDefault();
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+      }
+      function elementDrag(e) {
+        e = e || window.event;
+        e.preventDefault();
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+        elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+      }
+      function closeDragElement() {
+        document.onmouseup = null;
+        document.onmousemove = null;
+      }
     }
   </script>
 </body>
