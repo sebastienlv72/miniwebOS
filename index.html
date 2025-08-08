@@ -17,17 +17,10 @@
       align-items: center;
       justify-content: center;
     }
-    #profile {
-      display: none;
-      margin-top: 20px;
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(10px);
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    }
     #logout-btn {
-      margin-top: 10px;
+      position: fixed;
+      top: 20px;
+      right: 20px;
       padding: 8px 16px;
       background: crimson;
       border: none;
@@ -35,6 +28,8 @@
       cursor: pointer;
       color: white;
       transition: background 0.2s;
+      display: none;
+      z-index: 1000;
     }
     #logout-btn:hover {
       background: #a80000;
@@ -48,7 +43,7 @@
       backdrop-filter: blur(12px);
       border-radius: 20px;
       padding: 10px 20px;
-      display: flex;
+      display: none;
       align-items: center;
       gap: 20px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.3);
@@ -107,27 +102,12 @@
       font-size: 14px;
       letter-spacing: 1px;
     }
-    @media (max-width: 600px) {
-      .dock {
-        gap: 10px;
-        padding: 8px 12px;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-      .dock a {
-        width: 32px;
-        height: 32px;
-      }
-      .dock input[type="text"] {
-        width: 100px;
-      }
-    }
   </style>
 </head>
 <body>
   <div class="clock" id="clock"></div>
 
-  <h1>Web OS – Connexion avec Google</h1>
+  <h1 id="title">Web OS – Connexion avec Google</h1>
 
   <div id="g_id_onload"
        data-client_id="908397631579-20c8p66k2ag6rkqhkc8u5r4nqaihndou.apps.googleusercontent.com"
@@ -144,14 +124,9 @@
        data-logo_alignment="left">
   </div>
 
-  <div id="profile">
-    <p><strong>Connecté en tant que :</strong></p>
-    <p id="user-name"></p>
-    <p id="user-email"></p>
-    <button id="logout-btn" onclick="logout()">Se déconnecter</button>
-  </div>
+  <button id="logout-btn" onclick="logout()">Se déconnecter</button>
 
-  <div class="dock">
+  <div class="dock" id="dock">
     <a href="https://mail.google.com" target="_blank" title="Gmail">
       <img src="https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico" alt="Gmail">
     </a>
@@ -181,16 +156,18 @@
   <script>
     function handleCredentialResponse(response) {
       const data = parseJwt(response.credential);
-      document.getElementById('user-name').textContent = data.name;
-      document.getElementById('user-email').textContent = data.email;
-      document.getElementById('profile').style.display = 'block';
+      document.getElementById('title').style.display = 'none';
       document.querySelector('.g_id_signin').style.display = 'none';
+      document.getElementById('logout-btn').style.display = 'block';
+      document.getElementById('dock').style.display = 'flex';
     }
 
     function logout() {
       google.accounts.id.disableAutoSelect();
-      document.getElementById('profile').style.display = 'none';
+      document.getElementById('title').style.display = 'block';
       document.querySelector('.g_id_signin').style.display = 'block';
+      document.getElementById('logout-btn').style.display = 'none';
+      document.getElementById('dock').style.display = 'none';
     }
 
     function parseJwt(token) {
