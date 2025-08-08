@@ -2,26 +2,29 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Connexion Google</title>
+  <title>Web OS – Connexion Google</title>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #111;
+      font-family: 'Google Sans', Arial, sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
       color: white;
+      margin: 0;
+      height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
-      margin: 0;
     }
     #profile {
       display: none;
       margin-top: 20px;
-      background: #222;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
       padding: 20px;
       border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
     #logout-btn {
       margin-top: 10px;
@@ -31,37 +34,99 @@
       border-radius: 6px;
       cursor: pointer;
       color: white;
+      transition: background 0.2s;
+    }
+    #logout-btn:hover {
+      background: #a80000;
     }
     .dock {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 64px;
-      background: #1a1a1a;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      padding: 10px 20px;
       display: flex;
-      justify-content: center;
       align-items: center;
       gap: 20px;
-      padding: 10px;
-      border-top: 1px solid #333;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     }
     .dock a {
       width: 40px;
       height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      transition: transform 0.2s, background 0.3s;
+    }
+    .dock a:hover {
+      transform: scale(1.2);
+      background: rgba(255, 255, 255, 0.15);
     }
     .dock img {
       width: 100%;
       height: 100%;
       object-fit: contain;
-      transition: transform 0.2s;
     }
-    .dock img:hover {
-      transform: scale(1.2);
+    .dock form {
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .dock input[type="text"] {
+      border: none;
+      padding: 6px 10px;
+      font-size: 14px;
+      outline: none;
+      background: transparent;
+      color: white;
+      width: 160px;
+    }
+    .dock button {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+    }
+    .dock button img {
+      width: 20px;
+      height: 20px;
+    }
+    .clock {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      letter-spacing: 1px;
+    }
+    @media (max-width: 600px) {
+      .dock {
+        gap: 10px;
+        padding: 8px 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .dock a {
+        width: 32px;
+        height: 32px;
+      }
+      .dock input[type="text"] {
+        width: 100px;
+      }
     }
   </style>
 </head>
 <body>
+  <div class="clock" id="clock"></div>
+
   <h1>Web OS – Connexion avec Google</h1>
 
   <div id="g_id_onload"
@@ -105,9 +170,12 @@
     <a href="https://www.youtube.com" target="_blank" title="YouTube">
       <img src="https://www.youtube.com/s/desktop/fbffb14c/img/favicon_48.png" alt="YouTube">
     </a>
-    <a href="https://www.google.com" target="_blank" title="Google Search">
-      <img src="https://www.google.com/favicon.ico" alt="Google">
-    </a>
+    <form action="https://www.google.com/search" method="GET" target="_blank">
+      <input type="text" name="q" placeholder="Rechercher...">
+      <button type="submit">
+        <img src="https://www.google.com/favicon.ico" alt="Search">
+      </button>
+    </form>
   </div>
 
   <script>
@@ -133,6 +201,14 @@
       ).join(''));
       return JSON.parse(jsonPayload);
     }
+
+    function updateClock() {
+      const now = new Date();
+      const time = now.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+      document.getElementById('clock').textContent = time;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
   </script>
 </body>
 </html>
