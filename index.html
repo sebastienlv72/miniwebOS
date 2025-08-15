@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="fr">
+<!DOCTYPE html><html lang="fr">
 <head>
   <meta charset="UTF-8">
   <title>Web OS – Connexion Google + Explorateur de fichiers</title>
@@ -24,65 +23,59 @@
       margin: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
     }
     /* Clock */
-    .clock { position: fixed; top: 20px; left: 20px; background: rgba(0,0,0,0.4); padding: 6px 12px; border-radius: 8px; font-size: 14px; letter-spacing: .5px; }
+    .clock { position: fixed; top: 20px; left: 20px; background: rgba(0,0,0,0.4); padding: 6px 12px; border-radius: 8px; font-size: 14px; letter-spacing: .5px; }/* Logout button (only when connected) */
+#logout-btn { position: fixed; top: 20px; right: 20px; padding: 8px 16px; background: var(--danger); border: none; border-radius: 6px; cursor: pointer; color: #fff; transition: background .2s; display: none; z-index: 1000; }
+#logout-btn:hover { background:#b0231b }
 
-    /* Logout button (only when connected) */
-    #logout-btn { position: fixed; top: 20px; right: 20px; padding: 8px 16px; background: var(--danger); border: none; border-radius: 6px; cursor: pointer; color: #fff; transition: background .2s; display: none; z-index: 1000; }
-    #logout-btn:hover { background:#b0231b }
+/* Dock (hidden until connected) */
+.dock { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 20px; padding: 10px 16px; display: none; align-items: center; gap: 16px; box-shadow: 0 8px 30px rgba(0,0,0,.35); }
+.dock a, .dock button.icon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 12px; transition: transform .18s, background .25s; background: transparent; border: none; cursor: pointer; }
+.dock a:hover, .dock button.icon:hover { transform: scale(1.18); background: var(--glass-strong); }
+.dock img { width: 100%; height: 100%; object-fit: contain; }
+.dock form { display: flex; align-items: center; background: var(--glass-strong); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.dock input[type="text"] { border: none; padding: 8px 10px; font-size: 14px; outline: none; background: transparent; color: white; width: 180px; }
+.dock button.search { background: transparent; border: none; cursor: pointer; padding: 6px; display:flex; align-items:center; }
+.dock button.search img { width: 20px; height: 20px; }
 
-    /* Dock (hidden until connected) */
-    .dock { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 20px; padding: 10px 16px; display: none; align-items: center; gap: 16px; box-shadow: 0 8px 30px rgba(0,0,0,.35); }
-    .dock a, .dock button.icon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 12px; transition: transform .18s, background .25s; background: transparent; border: none; cursor: pointer; }
-    .dock a:hover, .dock button.icon:hover { transform: scale(1.18); background: var(--glass-strong); }
-    .dock img { width: 100%; height: 100%; object-fit: contain; }
-    .dock form { display: flex; align-items: center; background: var(--glass-strong); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-    .dock input[type="text"] { border: none; padding: 8px 10px; font-size: 14px; outline: none; background: transparent; color: white; width: 180px; }
-    .dock button.search { background: transparent; border: none; cursor: pointer; padding: 6px; display:flex; align-items:center; }
-    .dock button.search img { width: 20px; height: 20px; }
+/* ---------- Explorer (Material-like) ---------- */
+.modal { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: none; align-items: center; justify-content: center; z-index: 1200; }
+.sheet { width: min(100vw - 40px, 980px); height: min(90vh, 620px); background: rgba(30,30,30,.92); backdrop-filter: blur(14px); border: 1px solid var(--border); border-radius: 14px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.55); }
+.sheet header { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.06); }
+.title { display: flex; align-items: center; gap: 10px; font-weight: 500; }
+.chips { display: flex; gap: 8px; }
+.chip { background: rgba(255,255,255,.08); border: 1px solid var(--border); padding: 6px 10px; border-radius: 999px; font-size: 12px; cursor: default; }
+.toolbar { display: flex; gap: 8px; }
+.btn { display:inline-flex; align-items:center; gap:8px; padding: 8px 12px; border-radius: 8px; border:1px solid var(--border); background: rgba(255,255,255,.08); color:#fff; cursor:pointer; transition: background .2s, border-color .2s; }
+.btn:hover{ background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.45); }
+.btn.primary{ background: var(--primary); border-color: var(--primary); }
+.btn.primary:hover{ filter: brightness(0.95); }
+.btn.danger{ background: var(--danger); border-color: var(--danger); }
 
-    /* ---------- Explorer (Material-like) ---------- */
-    .modal { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: none; align-items: center; justify-content: center; z-index: 1200; }
-    .sheet { width: min(100vw - 40px, 980px); height: min(90vh, 620px); background: rgba(30,30,30,.92); backdrop-filter: blur(14px); border: 1px solid var(--border); border-radius: 14px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.55); }
-    .sheet header { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.06); }
-    .title { display: flex; align-items: center; gap: 10px; font-weight: 500; }
-    .chips { display: flex; gap: 8px; }
-    .chip { background: rgba(255,255,255,.08); border: 1px solid var(--border); padding: 6px 10px; border-radius: 999px; font-size: 12px; cursor: default; }
-    .toolbar { display: flex; gap: 8px; }
-    .btn { display:inline-flex; align-items:center; gap:8px; padding: 8px 12px; border-radius: 8px; border:1px solid var(--border); background: rgba(255,255,255,.08); color:#fff; cursor:pointer; transition: background .2s, border-color .2s; }
-    .btn:hover{ background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.45); }
-    .btn.primary{ background: var(--primary); border-color: var(--primary); }
-    .btn.primary:hover{ filter: brightness(0.95); }
-    .btn.danger{ background: var(--danger); border-color: var(--danger); }
+.body { display: grid; grid-template-columns: 240px 1fr; gap: 0; flex: 1; min-height: 0; }
+.sidebar { border-right:1px solid var(--border); padding: 10px; display:flex; flex-direction:column; gap:8px; }
+.crumbs { display:flex; gap:8px; align-items:center; padding: 10px 14px; border-bottom:1px solid var(--border); white-space:nowrap; overflow:auto; }
+.crumb { background: rgba(255,255,255,.08); border:1px solid var(--border); padding:6px 10px; border-radius: 8px; cursor:pointer; }
 
-    .body { display: grid; grid-template-columns: 240px 1fr; gap: 0; flex: 1; min-height: 0; }
-    .sidebar { border-right:1px solid var(--border); padding: 10px; display:flex; flex-direction:column; gap:8px; }
-    .crumbs { display:flex; gap:8px; align-items:center; padding: 10px 14px; border-bottom:1px solid var(--border); white-space:nowrap; overflow:auto; }
-    .crumb { background: rgba(255,255,255,.08); border:1px solid var(--border); padding:6px 10px; border-radius: 8px; cursor:pointer; }
+.list { overflow:auto; padding: 8px; }
+.row { display:grid; grid-template-columns: 32px 1fr 160px 200px 200px; align-items:center; gap:10px; padding:8px; border-radius:10px; border:1px solid transparent; }
+.row:hover { background: rgba(255,255,255,.06); border-color: var(--border); }
+.icon { width: 24px; height: 24px; opacity:.95 }
+.name { font-weight:500 }
+.muted { color: #cfd8dc99; font-size: 12px; }
 
-    .list { overflow:auto; padding: 8px; }
-    .row { display:grid; grid-template-columns: 32px 1fr 160px 200px 200px; align-items:center; gap:10px; padding:8px; border-radius:10px; border:1px solid transparent; }
-    .row:hover { background: rgba(255,255,255,.06); border-color: var(--border); }
-    .icon { width: 24px; height: 24px; opacity:.95 }
-    .name { font-weight:500 }
-    .muted { color: #cfd8dc99; font-size: 12px; }
+.editor { border-top:1px solid var(--border); display:none; flex-direction:column; }
+.editor textarea { width:100%; height:180px; padding:12px; border:none; outline:none; color:#fff; background:#1e1e1e; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+.editor .actions { display:flex; justify-content:flex-end; gap:8px; padding: 10px; border-top:1px solid var(--border); }
 
-    .editor { border-top:1px solid var(--border); display:none; flex-direction:column; }
-    .editor textarea { width:100%; height:180px; padding:12px; border:none; outline:none; color:#fff; background:#1e1e1e; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
-    .editor .actions { display:flex; justify-content:flex-end; gap:8px; padding: 10px; border-top:1px solid var(--border); }
+@media (max-width: 720px){
+  .row{ grid-template-columns: 32px 1fr 120px 1fr 1fr; }
+  .dock input[type=text]{ width:120px }
+}
 
-    @media (max-width: 720px){
-      .row{ grid-template-columns: 32px 1fr 120px 1fr 1fr; }
-      .dock input[type=text]{ width:120px }
-    }
   </style>
 </head>
 <body>
-  <div class="clock" id="clock"></div>
-
-  <h1 id="title">Web OS – Connexion avec Google</h1>
-
-  <!-- Google Identity Services -->
-  <div id="g_id_onload"
+  <div class="clock" id="clock"></div>  <h1 id="title">Web OS – Connexion avec Google</h1>  <!-- Google Identity Services -->  <div id="g_id_onload"
        data-client_id="908397631579-20c8p66k2ag6rkqhkc8u5r4nqaihndou.apps.googleusercontent.com"
        data-callback="handleCredentialResponse"
        data-auto_prompt="false">
@@ -90,12 +83,9 @@
   <div class="g_id_signin"
        data-type="standard" data-size="large" data-theme="outline"
        data-text="signin_with" data-shape="rectangular" data-logo_alignment="left">
-  </div>
+  </div><button id="logout-btn" onclick="logout()">Se déconnecter</button>
 
-  <button id="logout-btn" onclick="logout()">Se déconnecter</button>
-
-  <!-- Dock (après connexion) -->
-  <div class="dock" id="dock">
+  <!-- Dock (après connexion) -->  <div class="dock" id="dock">
     <button class="icon" title="Explorateur de fichiers" onclick="openExplorer()">
       <!-- simple folder SVG inline -->
       <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M10 4H4a2 2 0 0 0-2 2v2h20V8a2 2 0 0 0-2-2h-8l-2-2z" opacity=".8"/><path d="M22 10H2v8a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-8z"/></svg>
@@ -110,10 +100,7 @@
       <input type="text" name="q" placeholder="Rechercher..." aria-label="Rechercher sur Google">
       <button type="submit" class="search"><img src="https://www.google.com/favicon.ico" alt="Search"></button>
     </form>
-  </div>
-
-  <!-- Modal Explorateur -->
-  <div class="modal" id="explorer-modal" role="dialog" aria-modal="true" aria-labelledby="explorer-title">
+  </div>  <!-- Modal Explorateur -->  <div class="modal" id="explorer-modal" role="dialog" aria-modal="true" aria-labelledby="explorer-title">
     <div class="sheet">
       <header>
         <div class="title">
@@ -127,30 +114,27 @@
           <button class="btn" onclick="createFile()">📄 Nouveau fichier</button>
           <button class="btn danger" onclick="closeExplorer()">Fermer</button>
         </div>
-      </header>
+      </header><div class="crumbs" id="breadcrumbs"></div>
 
-      <div class="crumbs" id="breadcrumbs"></div>
-
-      <div class="body">
-        <aside class="sidebar">
-          <button class="btn" onclick="goUp()">⬆️ Remonter</button>
-          <button class="btn" onclick="refreshList()">🔄 Actualiser</button>
-          <div class="muted" id="folder-info"></div>
-        </aside>
-        <section class="list" id="file-list" aria-live="polite"></section>
-      </div>
-
-      <div class="editor" id="editor">
-        <textarea id="editor-text" placeholder="Éditez le contenu ici..."></textarea>
-        <div class="actions">
-          <button class="btn" onclick="closeEditor()">Annuler</button>
-          <button class="btn primary" onclick="saveEditor()">💾 Enregistrer</button>
-        </div>
-      </div>
-    </div>
+  <div class="body">
+    <aside class="sidebar">
+      <button class="btn" onclick="goUp()">⬆️ Remonter</button>
+      <button class="btn" onclick="refreshList()">🔄 Actualiser</button>
+      <div class="muted" id="folder-info"></div>
+    </aside>
+    <section class="list" id="file-list" aria-live="polite"></section>
   </div>
 
-  <script>
+  <div class="editor" id="editor">
+    <textarea id="editor-text" placeholder="Éditez le contenu ici..."></textarea>
+    <div class="actions">
+      <button class="btn" onclick="closeEditor()">Annuler</button>
+      <button class="btn primary" onclick="saveEditor()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+  </div>  <script>
     // -------------------- Auth / UI state --------------------
     function handleCredentialResponse(response) {
       // On masque l'UI de connexion et on montre le dock + logout
@@ -327,6 +311,5 @@
         await refreshList();
       }catch(e){ alert('Renommage non supporté ou refusé'); }
     }
-  </script>
-</body>
+  </script></body>
 </html>
