@@ -8,12 +8,12 @@
   "orientation": "any",
   "icons": [
     {
-      "src": "assets/icons/icon-192.png",
+      "src": "https://upload.wikimedia.org/wikipedia/commons/3/3b/Iconic_document_icon.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "assets/icons/icon-512.png",
+      "src": "https://www.google.com/url?sa=i&url=https%3A%2F%2Fincoalliance.com%2Fcropped-icon-512x512-png&psig=AOvVaw1wEaD2McYm6A_JSMPAi1gm&ust=1755438732936000&source=images&cd=vfe&opi=89978449&ved=0CBUQjhxqFwoTCNCA4oO9j48DFQAAAAAdAAAAABAE",
       "sizes": "512x512",
       "type": "image/png"
     }
